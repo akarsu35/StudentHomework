@@ -3,7 +3,7 @@ import { supabase } from '../services/supabaseClient'
 import { assignHomeworkToAllStudents } from '../services/homeworkServices'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
-import { v4 as uuidv4 } from 'uuidv4'
+import { v4 as uuidv4 } from 'uuid'
 
 const HomeworkList = () => {
   const [homeworkList, setHomeworkList] = useState([])
