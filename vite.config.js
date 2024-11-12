@@ -1,15 +1,25 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
+import polyfillNode from 'rollup-plugin-polyfill-node'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
-      external: [], // 'uuid' buradan çıkarıldı
+      plugins: [polyfillNode()],
     },
   },
   optimizeDeps: {
-    include: ['uuid'], // uuid'i optimizeDeps altına ekledik
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+      plugins: [
+        NodeGlobalsPolyfillPlugin({
+          buffer: true,
+        }),
+      ],
+    },
   },
 })
