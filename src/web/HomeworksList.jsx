@@ -95,7 +95,7 @@ const HomeworkList = () => {
   if (loading) return <p>Loading...</p>
 
   return (
-    <div>
+    <div className="mt-4 flex flex-col gap-3">
       <h1>Ödev Ekle</h1>
       <Formik
         initialValues={{ name: '' }}
@@ -110,22 +110,22 @@ const HomeworkList = () => {
                 name="name"
                 type="text"
                 id="name"
-                className="w-400 border border-red-600 rounded-md"
+                className="ml-4 w-72 border border-red-600 rounded-md"
               />
               <ErrorMessage
                 name="name"
                 component="div"
                 style={{ color: 'red' }}
               />
+              <button className="ml-4 w-48 bg-yellow-500 rounded" type="submit">
+                Ekle
+              </button>
             </div>
-            <button className="w-20 bg-yellow-500 rounded" type="submit">
-              Ekle
-            </button>
           </Form>
         )}
       </Formik>
 
-      <h2>Ödev Listesi</h2>
+      {/* <h2>Ödev Listesi</h2>
       <ul>
         {homeworkList.map((homework) => (
           <li key={homework.id} className="border-b py-2">
@@ -149,7 +149,7 @@ const HomeworkList = () => {
             <p>Status: {JSON.stringify(homework.status)}</p>
           </li>
         ))}
-      </ul>
+      </ul> */}
     </div>
   )
 }
