@@ -6,7 +6,10 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
-      external: ['uuid'],
+      external: [], // 'uuid' buradan çıkarıldı
     },
+  },
+  optimizeDeps: {
+    include: ['uuid'], // uuid'i optimizeDeps altına ekledik
   },
 })
