@@ -42,7 +42,7 @@ const AddStudent = () => {
         }}
       >
         {({ handleSubmit }) => (
-          <Form onSubmit={handleSubmit} className="flex gap-4">
+          <Form onSubmit={handleSubmit} className="flex flex-wrap gap-4">
             <div>
               <label htmlFor="no">No: </label>
               <Field

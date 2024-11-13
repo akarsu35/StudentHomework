@@ -105,7 +105,7 @@ const StudentList = () => {
         <h2>Öğrenci Arama</h2>
         <Formik initialValues={{ search: '' }} onSubmit={handleSearch}>
           {() => (
-            <Form className="flex items-center gap-2 mb-4">
+            <Form className="flex flex-wrap items-center gap-2 mb-4">
               <Field
                 name="search"
                 type="text"

@@ -106,7 +106,7 @@ const HomeworkList = () => {
       >
         {() => (
           <Form>
-            <div>
+            <div className='flex'>
               <label htmlFor="name">Ödev Adı:</label>
               <Field
                 name="name"
