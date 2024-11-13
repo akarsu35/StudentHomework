@@ -234,7 +234,7 @@ const StudentList = () => {
           ))}
         </div>
       ) : (
-        <ul className="grid grid-cols-3 gap-2">
+        <ul className="flex flex-wrap gap-2">
           {students.map((student) => (
             <li
               className=""
@@ -243,7 +243,7 @@ const StudentList = () => {
               <button
                 onClick={() => toggleStudent(student.id)}
                 id={student.id}
-                className="text-xl font-semibold border border-gray-200 rounded-lg p-1 shadow-lg w-full my-1 flex justify-center items-center "
+                className="text-xl font-semibold border border-gray-200 rounded-lg p-1 shadow-lg w-80  my-1 flex justify-center items-center "
               >
                 {student.name} - {student.class}
               </button>
