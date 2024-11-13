@@ -95,8 +95,10 @@ const HomeworkList = () => {
   if (loading) return <p>Loading...</p>
 
   return (
-    <div className="mt-4 flex flex-col gap-3">
-      <h1>Ödev Ekle</h1>
+    <div className="mt-8 flex flex-col gap-3 pb-20 pt-8 border-b-2">
+      <h1 className="flex bg-blue-500 justify-center items-center rounded-md w-full mb-2 h-8 text-xl text-white font-semibold">
+        Ödev Ekle
+      </h1>
       <Formik
         initialValues={{ name: '' }}
         validationSchema={validationSchema}

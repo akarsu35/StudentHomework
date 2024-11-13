@@ -46,7 +46,7 @@ const StudentSearch = () => {
   return (
     <div>
       <h2>Öğrenci Arama</h2>
-      <Formik initialValues={{ search: '' }} onSubmit={handleSearch}>
+      <Formik initialValues={{ search: ''}} onSubmit={handleSearch}>
         {() => (
           <Form className="flex items-center gap-2 mb-4">
             <Field
