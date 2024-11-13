@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from '../../node_modules/uuid/dist/esm-browser/index'
 import { addStudent } from '../services/studentServices'
 import HomeworksList from './HomeworksList'
 
