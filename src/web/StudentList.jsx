@@ -10,12 +10,12 @@ const StudentList = () => {
   const [studentHomework, setStudentHomework] = useState({}) // Öğrenci ödevleri için obje
   const [isOpen, setIsOpen] = useState({}) // Her öğrenci için ayrı isOpen durumu
   const [filteredStudents, setFilteredStudents] = useState([])
-  const [searchIsOpen,setSearchIsOpen]=useState(false)
-  const [show,setShow]=useState(false)
-  
+  const [searchIsOpen, setSearchIsOpen] = useState(false)
+  const [show, setShow] = useState(false)
+  const [activeButton, setActiveButton] = useState(null) // Aktif butonu takip eden state
+
   useEffect(() => {
     fetchStudents()
-    
   }, [])
 
   const fetchStudents = async () => {
@@ -24,7 +24,7 @@ const StudentList = () => {
       console.log('Error fetching students data:', error)
     } else {
       setStudents(data)
-     
+
       data.forEach((student) => fetchStudentHomeworkForStudent(student.id))
     }
   }
@@ -74,6 +74,7 @@ const StudentList = () => {
       ...prevIsOpen,
       [studentId]: !prevIsOpen[studentId], // Öğrencinin mevcut durumunu tersine çevir
     }))
+    setActiveButton(studentId) // Tıklanan butonu aktif olarak ayarla
   }
   // Formik ile arama fonksiyonu
   const handleSearch = async (values) => {
@@ -90,12 +91,9 @@ const StudentList = () => {
     } else {
       setFilteredStudents(data)
       setSearchIsOpen(true)
-      
-
     }
   }
 
-  
   return (
     <div>
       <h1 className="flex bg-blue-500 justify-center items-center rounded-md w-full mt-8 mb-3 h-8 text-xl text-white font-semibold">
@@ -152,7 +150,7 @@ const StudentList = () => {
               </button>
               {isOpen[student.id] ? (
                 <div>
-                  <ul className='flex flex-wrap gap-2'>
+                  <ul className="flex flex-wrap gap-2">
                     {(studentHomework[student.id] || []).map((homework) => (
                       <li
                         className="flex flex-col justify-center items-center border border-yellow-600 rounded-md w-96"
@@ -236,14 +234,16 @@ const StudentList = () => {
       ) : (
         <ul className="flex flex-wrap gap-2">
           {students.map((student) => (
-            <li
-              className=""
-              key={student.id}
-            >
+            <li key={student.id}>
               <button
                 onClick={() => toggleStudent(student.id)}
                 id={student.id}
-                className="text-xl font-semibold border border-gray-200 rounded-lg p-1 shadow-lg w-80  my-1 flex justify-center items-center "
+                className={`text-xl font-semibold border border-gray-200 rounded-lg p-1 shadow-lg w-80 my-1 flex justify-center items-center 
+              ${
+                activeButton === student.id
+                  ? 'bg-yellow-500 text-white'
+                  : ''
+              }`}
               >
                 {student.name} - {student.class}
               </button>
