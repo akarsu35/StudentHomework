@@ -137,7 +137,7 @@ const StudentList = () => {
       </div>
 
       {searchIsOpen ? (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="flex flex-col">
           {filteredStudents.map((student) => (
             <li
               className="flex flex-col justify-center items-center"
@@ -152,7 +152,7 @@ const StudentList = () => {
               </button>
               {isOpen[student.id] ? (
                 <div>
-                  <ul>
+                  <ul className='flex flex-wrap gap-2'>
                     {(studentHomework[student.id] || []).map((homework) => (
                       <li
                         className="flex flex-col justify-center items-center border border-yellow-600 rounded-md w-96"
@@ -237,7 +237,7 @@ const StudentList = () => {
         <ul className="grid grid-cols-3 gap-2">
           {students.map((student) => (
             <li
-              className="flex flex-col justify-center items-center"
+              className=""
               key={student.id}
             >
               <button
@@ -251,7 +251,7 @@ const StudentList = () => {
                 <ul className="flex flex-col gap-2">
                   {(studentHomework[student.id] || []).map((homework) => (
                     <li
-                      className="flex flex-col justify-center items-center border border-yellow-600 rounded-md w-[25rem] py-1"
+                      className="flex flex-col justify-center items-center border border-yellow-600 rounded-md w-full py-1"
                       key={homework.homework_id}
                     >
                       <h3 className="text-lg font-medium">
@@ -266,7 +266,7 @@ const StudentList = () => {
                               'yapildi'
                             )
                           }
-                          className={`mr-2 px-2 py-1 rounded ${
+                          className={`m-2 px-2 py-1 rounded ${
                             homework.homeworks.status?.yapildi
                               ? 'bg-green-500'
                               : 'bg-gray-300'
