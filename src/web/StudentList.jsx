@@ -13,10 +13,14 @@ const StudentList = () => {
   const [searchIsOpen, setSearchIsOpen] = useState(false)
   const [show, setShow] = useState(false)
   const [activeButton, setActiveButton] = useState(null) // Aktif butonu takip eden state
-
+  const [homeworks, setHomeworks] = useState([])
   useEffect(() => {
     fetchStudents()
+    fetchHomeworkList()
+  
+   
   }, [])
+
 
   const fetchStudents = async () => {
     const { data, error } = await supabase.from('students').select('*')
@@ -28,11 +32,22 @@ const StudentList = () => {
       data.forEach((student) => fetchStudentHomeworkForStudent(student.id))
     }
   }
+ const fetchHomeworkList = async () => {
+   const { data, error } = await supabase.from('homeworks').select('*')
+   if (error) {
+     console.log('Error fetching homeworks data:', error)
+   } else {
+     setHomeworks(data) // Tüm veriyi doğrudan set et
+     console.log('Fetched homeworks:', data)
+   }
+ }
+
 
   const fetchStudentHomeworkForStudent = async (studentId) => {
     const { data, error } = await supabase
       .from('student_homework')
-      .select('homework_id, homeworks (name, status)')
+      .select('homework_id,name,homework_status')
+
       .eq('student_id', studentId)
 
     if (error) {
@@ -42,20 +57,33 @@ const StudentList = () => {
         ...prevHomework,
         [studentId]: data,
       }))
+
+      console.log('studenthomework:', data)
+      console.log('a: ', studentHomework)
     }
   }
 
   const updateHomeworkStatus = async (homeworkId, studentId, newStatus) => {
     const { error } = await supabase
-      .from('homeworks')
-      .update({ status: newStatus })
-      .eq('id', homeworkId)
+      .from('student_homework')
+      .update({ homework_status: newStatus })
+      .eq('student_id', studentId)
+      .eq('homework_id', homeworkId)
+    console.log(
+      'student: ',
+      studentId,
+      'homework: ',
+      homeworkId,
+      'new status: ',
+      newStatus
+    )
 
     if (error) {
       console.error('Error updating status:', error)
     } else {
       alert('Homework status updated successfully')
       fetchStudentHomeworkForStudent(studentId)
+     
     }
   }
 
@@ -156,7 +184,7 @@ const StudentList = () => {
                         className="flex flex-col justify-center items-center border border-yellow-600 rounded-md w-96"
                         key={homework.homework_id}
                       >
-                        <h3>Ödev Adı: {homework.homeworks.name}</h3>
+                        <h3>Ödev Adı: {homework.name}</h3>
                         <div>
                           <button
                             onClick={() =>
@@ -167,7 +195,7 @@ const StudentList = () => {
                               )
                             }
                             className={`mr-2 px-2 py-1 rounded ${
-                              homework.homeworks.status?.yapildi
+                              homework.homework_status?.yapildi
                                 ? 'bg-green-500'
                                 : 'bg-gray-300'
                             }`}
@@ -183,7 +211,7 @@ const StudentList = () => {
                               )
                             }
                             className={`mr-2 px-2 py-1 rounded ${
-                              homework.homeworks.status?.yapilmadi
+                              homework.homework_status?.yapilmadi
                                 ? 'bg-red-500'
                                 : 'bg-gray-300'
                             }`}
@@ -199,7 +227,7 @@ const StudentList = () => {
                               )
                             }
                             className={`mr-2 px-2 py-1 rounded ${
-                              homework.homeworks.status?.eksik
+                              homework.homework_status?.eksik
                                 ? 'bg-yellow-500'
                                 : 'bg-gray-300'
                             }`}
@@ -215,7 +243,7 @@ const StudentList = () => {
                               )
                             }
                             className={`px-2 py-1 rounded ${
-                              homework.homeworks.status?.gelmedi
+                              homework.homework_status?.gelmedi
                                 ? 'bg-blue-500'
                                 : 'bg-gray-300'
                             }`}
@@ -239,11 +267,7 @@ const StudentList = () => {
                 onClick={() => toggleStudent(student.id)}
                 id={student.id}
                 className={`text-xl font-semibold border border-gray-200 rounded-lg p-1 shadow-lg w-80 my-1 flex justify-center items-center 
-              ${
-                activeButton === student.id
-                  ? 'bg-yellow-500 text-white'
-                  : ''
-              }`}
+              ${activeButton === student.id ? 'bg-yellow-500 text-white' : ''}`}
               >
                 {student.name} - {student.class}
               </button>
@@ -255,7 +279,8 @@ const StudentList = () => {
                       key={homework.homework_id}
                     >
                       <h3 className="text-lg font-medium">
-                        Ödev Adı: {homework.homeworks.name}
+                        Ödev Adı:{homework.name}
+                        {console.log(homework.name)}
                       </h3>
                       <div>
                         <button
@@ -267,7 +292,7 @@ const StudentList = () => {
                             )
                           }
                           className={`m-2 px-2 py-1 rounded ${
-                            homework.homeworks.status?.yapildi
+                            homework.homework_status?.yapildi
                               ? 'bg-green-500'
                               : 'bg-gray-300'
                           }`}
@@ -283,7 +308,7 @@ const StudentList = () => {
                             )
                           }
                           className={`mr-2 px-2 py-1 rounded ${
-                            homework.homeworks.status?.yapilmadi
+                            homework.homework_status?.yapilmadi
                               ? 'bg-red-500'
                               : 'bg-gray-300'
                           }`}
@@ -299,7 +324,7 @@ const StudentList = () => {
                             )
                           }
                           className={`mr-2 px-2 py-1 rounded ${
-                            homework.homeworks.status?.eksik
+                            homework.homework_status?.eksik
                               ? 'bg-yellow-500'
                               : 'bg-gray-300'
                           }`}
@@ -315,7 +340,7 @@ const StudentList = () => {
                             )
                           }
                           className={`px-2 py-1 rounded ${
-                            homework.homeworks.status?.gelmedi
+                            homework.homework_status?.gelmedi
                               ? 'bg-blue-500'
                               : 'bg-gray-300'
                           }`}

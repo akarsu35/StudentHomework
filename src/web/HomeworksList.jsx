@@ -1,18 +1,28 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../services/supabaseClient'
 import { assignHomeworkToAllStudents } from '../services/homeworkServices'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { Formik, Form, Field, ErrorMessage, FieldArray } from 'formik'
 import * as Yup from 'yup'
 import { v4 as uuidv4 } from '../../node_modules/uuid/dist/esm-browser/index'
+
 
 const HomeworkList = () => {
   const [homeworkList, setHomeworkList] = useState([])
   const [loading, setLoading] = useState(true)
-
+  const [students, setStudents] = useState([])
   useEffect(() => {
     fetchHomeworkList()
+    fetchStudents()
+    
   }, [])
-
+  const fetchStudents = async () => {
+    const { data, error } = await supabase.from('students').select('*')
+    if (error) {
+      console.log('Error fetching students data:', error)
+    } else {
+      setStudents(data)
+    }
+  }
   const fetchHomeworkList = async () => {
     setLoading(true)
     const { data, error } = await supabase.from('homeworks').select('*')
@@ -27,33 +37,48 @@ const HomeworkList = () => {
 
   const handleAddHomework = async (values, { resetForm }) => {
     const homeworkId = uuidv4()
-    const { error } = await supabase
-      .from('homeworks')
-      .insert([
-        {
-          id: homeworkId,
-          name: values.name,
-          status: {
-            yapildi: false,
-            yapilmadi: true,
-            eksik: false,
-            gelmedi: false,
+    const { name, selectedStudents } = values
+
+    try {
+      // İlk olarak homeworks tablosuna yeni bir ödev ekleyin
+      const { error: homeworkError } = await supabase
+        .from('homeworks')
+        .insert([{ id: homeworkId, name }])
+
+      if (homeworkError) {
+        console.error(
+          'Error adding homework to homeworks table:',
+          homeworkError
+        )
+        return // Eğer hata varsa, işlemi burada sonlandır
+      }
+
+      // Eğer başarıyla eklendiyse student_homework tablosuna ekleyin
+      const insertPromises = selectedStudents.map((studentId) => {
+        return supabase.from('student_homework').insert([
+          {
+            student_id: studentId,
+            homework_id: homeworkId,
+            name: name,
+            homework_status: {
+              yapildi: false,
+              yapilmadi: true,
+              eksik: false,
+              gelmedi: false,
+            },
           },
-        },
-      ])
+        ])
+      })
 
-    if (error) {
-      console.error('Error adding homework:', error)
-    } else {
-      fetchHomeworkList() // Yeni ödev listesini güncelle
-      handleAssignHomework(homeworkId) // Tüm öğrencilere eklenen ödevi ata
+      await Promise.all(insertPromises)
+
+      // Başarılı ise ödev listesini güncelle
+      fetchHomeworkList()
+      // handleAssignHomework(homeworkId) // Tüm öğrencilere eklenen ödevi ata
       resetForm() // Formu sıfırla
+    } catch (error) {
+      console.error('Error adding homework:', error)
     }
-  }
-
-  // insert to homework for all students
-  const handleAssignHomework = async (homeworkId) => {
-    await assignHomeworkToAllStudents(homeworkId)
   }
 
   const validationSchema = Yup.object().shape({
@@ -100,13 +125,13 @@ const HomeworkList = () => {
         Ödev Ekle
       </h1>
       <Formik
-        initialValues={{ name: '' }}
+        initialValues={{ name: '', selectedStudents: [] }}
         validationSchema={validationSchema}
         onSubmit={handleAddHomework}
       >
-        {() => (
+        {({ values, handleChange }) => (
           <Form>
-            <div className='flex'>
+            <div className="flex items-center">
               <label htmlFor="name">Ödev Adı:</label>
               <Field
                 name="name"
@@ -119,10 +144,38 @@ const HomeworkList = () => {
                 component="div"
                 style={{ color: 'red' }}
               />
-              <button className="ml-4 w-48 bg-yellow-500 rounded" type="submit">
-                Ekle
-              </button>
             </div>
+
+            <div className="mt-4">
+              <label htmlFor="selectedStudents">Öğrenci Seç:</label>
+              <Field
+                as="select"
+                name="selectedStudents"
+                id="selectedStudents"
+                multiple
+                onChange={handleChange} // Handle change to update selected values
+                className="ml-4 w-72 border border-red-600 rounded-md overflow-y-auto"
+              >
+                {students.map((student) => (
+                  <option
+                    key={student.id}
+                    value={student.id}
+                    className="flex items-center p-1"
+                  >
+                    {student.name}
+                  </option>
+                ))}
+              </Field>
+              <ErrorMessage
+                name="selectedStudents"
+                component="div"
+                style={{ color: 'red' }}
+              />
+            </div>
+
+            <button className="mt-4 w-48 bg-yellow-500 rounded" type="submit">
+              Ekle
+            </button>
           </Form>
         )}
       </Formik>
