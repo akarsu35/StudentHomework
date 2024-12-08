@@ -62,7 +62,7 @@ const HomeworkList = () => {
             name: name,
             homework_status: {
               yapildi: false,
-              yapilmadi: true,
+              yapilmadi: false,
               eksik: false,
               gelmedi: false,
             },
@@ -154,7 +154,7 @@ const HomeworkList = () => {
                 id="selectedStudents"
                 multiple
                 onChange={handleChange} // Handle change to update selected values
-                className="ml-4 w-72 border border-red-600 rounded-md overflow-y-auto"
+                className="w-72 border border-red-600 rounded-md overflow-y-auto"
               >
                 {students.map((student) => (
                   <option
